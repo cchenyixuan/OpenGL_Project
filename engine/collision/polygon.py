@@ -3,9 +3,11 @@ import numpy as np
 
 
 class ModelObject:
-    def __init__(self, filename="./resources/model/cube.obj", scale=1.0):
+    def __init__(self, filename="C:/PycharmProjects/OpenGL_Project/engine/resources/model/cube.obj", scale=1.0):
         from ObjLoader import LoadObject
         object_loader = LoadObject()
+        from MtlLoader import LoadMaterial
+        material_loader = LoadMaterial()
         # load vertices(x y z u v nx ny nz), indices and normals
         self.vertices, self.indices = object_loader.load_file(filename)
         self.vertices *= scale
@@ -17,6 +19,7 @@ class ModelObject:
         self.frame_vertex = [np.array(vertex[:3]) for vertex in self.frame_vertices]
         # create vao for model and its frame
         self.vao = self.create_vao(self.vertices, self.indices)
+        self.texture = material_loader.load_file(filename[:-3] + "mtl")
         self.frame_vao = self.create_vao(self.frame_vertices, self.frame_indices)
         # attributes
         self.indices_length = self.indices.nbytes // 4
@@ -80,6 +83,7 @@ class ModelObject:
         vao = glGenVertexArrays(1)
         glBindVertexArray(vao)
         vbo, ebo = glGenBuffers(2)
+        # vbo
         glBindBuffer(GL_ARRAY_BUFFER, vbo)
         glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
         glEnableVertexAttribArray(0)
@@ -88,24 +92,8 @@ class ModelObject:
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
         glEnableVertexAttribArray(2)
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(20))
+        # ebo
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+
         return vao
-
-
-class Square:
-    def __init__(self):
-        self.normal = [[1, 0, 0], [0, 1, 0]]
-        self.vertices = [[-0.2, -0.2, 0], [-0.2, 0.2, 0], [0.2, -0.2, 0], [0.2, 0.2, 0]]
-
-
-class LittleSquare:
-    def __init__(self):
-        self.normal = [[1, 0, 0], [0, 1, 0]]
-        self.vertices = [[-0.1, -0.1, 0], [-0.1, 0.1, 0], [0.1, -0.1, 0], [0.1, 0.1, 0]]
-
-
-class Triangle:
-    def __init__(self):
-        self.normal = [[1, 0, 0], [0, 1, 0], [1, 1, 0]]
-        self.vertices = [[-0.3, -0.3, 0], [-0.25, -0.3, 0], [-0.25, -0.25, 0]]

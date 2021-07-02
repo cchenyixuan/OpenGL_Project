@@ -6,25 +6,32 @@ import pyrr
 from polygon import *
 from shader_src import vertex_src, fragment_src
 from SAT import CheckCollision
-from camera import SphereCamera
+from camera import *
 
 MOUSE_PRESSED = False
+WIDTH, HEIGHT = 1200, 800
 
-cam = SphereCamera()
+cam = Camera()
 
 glfw.init()
-window = glfw.create_window(800, 800, "test collision", None, None)
+window = glfw.create_window(WIDTH, HEIGHT, "test collision", None, None)
 glfw.make_context_current(window)
 shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
 glUseProgram(shader)
 
-tetra = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\tetra.obj")
+tetra = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\tetra.obj", 0.1)
 tetra.is_static = False
 ball = ModelObject()
 cube = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\squared_cube.obj")
-cube.offset = np.array([-1, -1, 0.0, 0.0])
+cube.offset = np.array([10, 10, 0.0, 0.0])
 cube.is_static = False
 cube(0.1, cube.offset, False)
+print(cube.frame_vertex)
+cubes = {}
+for i in range(1, 10):
+    cubes[i] = ModelObject()
+    cubes[i](2.0, np.array([i, 0, 0.0, 0.0]), False)
+ground = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ground_.obj")
 
 
 # TODO =======# should be put in camera #=======
@@ -34,13 +41,13 @@ glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 view = cam.get_view_matrix()
 view_loc = glGetUniformLocation(shader, "view")
 glUniformMatrix4fv(view_loc, 1, GL_FALSE, view)
-projection = pyrr.matrix44.create_perspective_projection_matrix(45.0, 1.0, 0.001, 1000)
+projection = pyrr.matrix44.create_perspective_projection_matrix(45.0, WIDTH/HEIGHT, 0.001, 10000)
 projection_loc = glGetUniformLocation(shader, "projection")
 glUniformMatrix4fv(projection_loc, 1, GL_FALSE, projection)
 glEnable(GL_DEPTH_TEST)
 # TODO =======# should be put in camera #=======
 
-
+glfw.window_hint(glfw.SAMPLES, 12)
 def draw_polygon(polygon, scale=1.0):
     if polygon.is_static:
         glUniform1i(glGetUniformLocation(shader, "is_static"), 1)
@@ -73,8 +80,9 @@ def draw_polygon_with_frame(polygon, scale=1.0):
 def mouse_position_clb(_, x_pos, y_pos):
     global MOUSE_PRESSED
     # collision check
-    x_pos, y_pos = x_pos / 400 - 1, -y_pos / 400 + 1
-    offset = pyrr.Vector4([x_pos, y_pos, 0.0, 0.0]) * 10 / (np.sqrt(2) + 1)
+    x_pos, y_pos = x_pos / WIDTH * 2 - 1, -y_pos / HEIGHT * 2 + 1
+    # x,y,z,0 * norm(cam.pos-0,0,0)
+    offset = pyrr.Vector4([x_pos, y_pos+1, 0.0, 0.0])*10
     tetra.offset = offset
     sat1 = CheckCollision()
     sat1.load_polygons(tetra, ball)
@@ -115,10 +123,17 @@ while not glfw.window_should_close(window):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     draw_polygon_with_frame(tetra)
+    glUniformMatrix4fv(model_loc, 1, GL_FALSE, pyrr.matrix44.create_from_x_rotation(glfw.get_time()))
+    draw_polygon(ball)
+    glUniformMatrix4fv(model_loc, 1, GL_FALSE, pyrr.matrix44.create_from_x_rotation(0.0))
 
-    draw_polygon_with_frame(ball)
+    # draw_polygon_with_frame(cube)
 
-    draw_polygon_with_frame(cube)
+    for i in range(5, 6):
+        draw_polygon(cubes[i])
+    # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    draw_polygon(ground)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
     glfw.swap_buffers(window)
 

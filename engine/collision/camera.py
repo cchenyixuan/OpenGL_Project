@@ -4,24 +4,24 @@ from math import sin, cos, radians, sqrt
 
 class Camera:
     def __init__(self):
-        self.camera_pos = Vector3([0.0, 0.0, 1.0])
+        self.camera_pos = Vector3([0.0, 1.0, 10.0])
         self.camera_front = Vector3([0.0, 0.0, -1.0])
         self.camera_up = Vector3([0.0, 1.0, 0.0])
         self.camera_right = Vector3([1.0, 0.0, 0.0])
 
-        self.mouse_sensitivity = 0.15
+        self.mouse_sensitivity = 20
         self.jaw = -90
         self.pitch = 0
 
     def get_view_matrix(self):
         return matrix44.create_look_at(self.camera_pos, self.camera_pos + self.camera_front, self.camera_up)
 
-    def process_mouse_movement(self, xoffset, yoffset, constrain_pitch=True):
-        xoffset *= self.mouse_sensitivity
-        yoffset *= self.mouse_sensitivity
+    def process_mouse_movement(self, x_offset, y_offset, constrain_pitch=True):
+        x_offset *= self.mouse_sensitivity
+        y_offset *= self.mouse_sensitivity
 
-        self.jaw += xoffset
-        self.pitch += yoffset
+        self.jaw += x_offset
+        self.pitch += y_offset
 
         if constrain_pitch:
             if self.pitch > 90:
@@ -82,7 +82,7 @@ class Camera:
 
 class SphereCamera:
     def __init__(self):
-        self.camera_pos = Vector3([0.0, 0.0, 10.0])
+        self.camera_pos = Vector3([0.0, 0.0, 100.0])
         self.camera_front = Vector3([0.0, 0.0, -1.0])  # vector.normalise(camera_pos)
         self.camera_up = Vector3(
             [0.0, 1.0, 0.0])  # vector.normalise((sin(theta)sin(phi), cos(theta), sin(theta)cos(phi)))
