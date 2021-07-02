@@ -6,6 +6,11 @@ import pyrr
 from polygon import *
 from shader_src import vertex_src, fragment_src
 from SAT import CheckCollision
+from camera import SphereCamera
+
+MOUSE_PRESSED = False
+
+cam = SphereCamera()
 
 glfw.init()
 window = glfw.create_window(800, 800, "test collision", None, None)
@@ -26,9 +31,7 @@ cube(0.1, cube.offset, False)
 model = pyrr.matrix44.create_from_x_rotation(0.0)
 model_loc = glGetUniformLocation(shader, "model")
 glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
-view = pyrr.matrix44.create_look_at(pyrr.Vector3([0.0, 0.0, 5.0]),
-                                    pyrr.Vector3([0.0, 0.0, 0.0]),
-                                    pyrr.Vector3([0.0, 1.0, 0.0]))
+view = cam.get_view_matrix()
 view_loc = glGetUniformLocation(shader, "view")
 glUniformMatrix4fv(view_loc, 1, GL_FALSE, view)
 projection = pyrr.matrix44.create_perspective_projection_matrix(45.0, 1.0, 0.001, 1000)
@@ -68,8 +71,10 @@ def draw_polygon_with_frame(polygon, scale=1.0):
 
 
 def mouse_position_clb(_, x_pos, y_pos):
+    global MOUSE_PRESSED
+    # collision check
     x_pos, y_pos = x_pos / 400 - 1, -y_pos / 400 + 1
-    offset = pyrr.Vector4([x_pos, y_pos, 0.0, 0.0]) * 5 / (np.sqrt(2) + 1)
+    offset = pyrr.Vector4([x_pos, y_pos, 0.0, 0.0]) * 10 / (np.sqrt(2) + 1)
     tetra.offset = offset
     sat1 = CheckCollision()
     sat1.load_polygons(tetra, ball)
@@ -81,15 +86,33 @@ def mouse_position_clb(_, x_pos, y_pos):
     else:
         mode_loc = glGetUniformLocation(shader, "mode")
         glUniform1i(mode_loc, 0)
+    # update camera status
+    try:
+        x_offset = x_pos - cam.start[0]
+        y_offset = y_pos - cam.start[1]
+        if MOUSE_PRESSED:
+            cam.process_mouse_movement(-x_offset, -y_offset)
+            glUniformMatrix4fv(view_loc, 1, GL_FALSE, cam.get_view_matrix())
+
+    except:
+        pass
+    cam.start = [x_pos, y_pos]
+
+
+def mouse_event_clb(_, button, action, mods):
+    global MOUSE_PRESSED
+    if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
+        MOUSE_PRESSED = True
+    if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.RELEASE:
+        MOUSE_PRESSED = False
 
 
 glfw.set_cursor_pos_callback(window, mouse_position_clb)
+glfw.set_mouse_button_callback(window, mouse_event_clb)
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-    cube.offset = np.array([np.random.normal(), np.random.normal(), 0.0, 0.0])
 
     draw_polygon_with_frame(tetra)
 
