@@ -93,8 +93,8 @@ def mouse_position_clb(_, x_pos, y_pos):
         if MOUSE_PRESSED:
             cam.process_mouse_movement(-x_offset, -y_offset)
             glUniformMatrix4fv(view_loc, 1, GL_FALSE, cam.get_view_matrix())
-
-    except:
+    except AttributeError:
+        # first time
         pass
     cam.start = [x_pos, y_pos]
 
