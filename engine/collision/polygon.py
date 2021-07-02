@@ -3,7 +3,7 @@ import numpy as np
 
 
 class ModelObject:
-    def __init__(self, filename="C:/PycharmProjects/OpenGL_Project/engine/resources/model/cube.obj", scale=1.0):
+    def __init__(self, filename="./resources/model/cube.obj", scale=1.0):
         from ObjLoader import LoadObject
         object_loader = LoadObject()
         # load vertices(x y z u v nx ny nz), indices and normals
