@@ -3,7 +3,7 @@ import numpy as np
 
 
 class ModelObject:
-    def __init__(self, filename="C:/PycharmProjects/OpenGL_Project/engine/resources/model/cube.obj", scale=1.0):
+    def __init__(self, filename=r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ball.obj", scale=1.0):
         from ObjLoader import LoadObject
         object_loader = LoadObject()
         from MtlLoader import LoadMaterial
@@ -20,12 +20,14 @@ class ModelObject:
         # create vao for model and its frame
         self.vao = self.create_vao(self.vertices, self.indices)
         self.texture = material_loader.load_file(filename[:-3] + "mtl")
+        print(self.texture)
         self.frame_vao = self.create_vao(self.frame_vertices, self.frame_indices)
         # attributes
         self.indices_length = self.indices.nbytes // 4
         self.frame_indices_length = self.frame_indices.nbytes // 4
         self.is_static = True
         self.offset = np.array([0.0, 0.0, 0.0, 0.0])
+        self.selected = False
 
     def __call__(self, scale=float, offset=np.ndarray, static=bool):
         # update vertices with scale

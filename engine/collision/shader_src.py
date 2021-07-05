@@ -13,7 +13,7 @@ out vec3 f_nor;
 void main(){
     switch(is_static){
         case 0:
-            gl_Position = projection * view * model * vec4(pos, 1.0) + offset;
+            gl_Position = projection * view * model * (vec4(pos, 1.0) + offset);
             break;
         case 1:
             gl_Position = projection * view * model * vec4(pos, 1.0);

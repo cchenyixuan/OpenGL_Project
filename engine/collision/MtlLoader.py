@@ -31,7 +31,6 @@ class LoadMaterial:
     def load_file(self, filename):
         with open(filename, "r", encoding="utf8") as f:
             for row in f:
-                print(row)
                 if row[:2] == "ma":
                     image_dir = self.search_data(row, "ma")
             f.close()

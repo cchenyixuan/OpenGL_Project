@@ -27,7 +27,7 @@ class LoadObject:
         texture_uvs = []
         normals = []
         buffer = []
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf8") as f:
             for row in f.readlines():
                 if row[:2] == "v ":
                     vertices.append(self.search_data(row, "v"))
