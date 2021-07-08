@@ -158,6 +158,11 @@ def mouse_position_clb(window, xpos, ypos):
         cam.right_hand /= np.linalg.norm(cam.right_hand)
 
 
+def collision_detect():
+
+    pass
+
+
 sat = CheckCollision()
 glfw.set_key_callback(window, keyboard_operation_clb)
 glfw.set_mouse_button_callback(window, mouse_operation_clb)
@@ -171,26 +176,32 @@ while not glfw.window_should_close(window):
 
     draw_polygon_with_frame(skybox)
 
-    tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([1.0, 1.0, 0.0]), glfw.get_time()])
+    tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
     sat.load_polygons(tetra, ball)
     if sat.separating_axis_theorem():
         glUniform1i(mode_loc, 1)
+        sat.__init__()
+        sat.load_polygons__(tetra, ball)
+        if sat():
+            glUniform1i(mode_loc, 2)
     sat.__init__()
+    draw_polygon_with_frame(ball)
     for i in range(1, 10):
         sat.load_polygons(tetra, cubes[i])
         if sat.separating_axis_theorem():
             glUniform1i(mode_loc, 1)
+            sat.__init__()
+            sat.load_polygons__(tetra, cubes[i])
+            if sat():
+                glUniform1i(mode_loc, 2)
         sat.__init__()
-
     draw_polygon_with_frame(tetra)
     glUniform1i(mode_loc, 0)
-
-    draw_polygon_with_frame(ball)
 
     # draw_polygon_with_frame(cube)
 
     for i in range(1, 10):
-        cubes[i].set_attribute(rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()*i])
+        cubes[i].set_attribute(rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
         draw_polygon_with_frame(cubes[i])
     # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     draw_polygon(ground)

@@ -46,18 +46,20 @@ class ModelObject:
         if type(self.scale) is not np.ndarray:
             self.scale = np.array([self.scale] * 3)
         self.__call__()
-        # self.test()
-        glDeleteVertexArrays(1, (self.frame_vao,))
-        self.frame_vao = self.create_vao(self.frame_vertices, self.frame_indices)
 
     def __call__(self):
-        # update vertices with scale
-        model = self.get_model_matrix()
+        # update vertex status
+        model = create_from_translation(self.offset).T @ create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
         self.vertex = [model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]
+        # create frame
         frame_model = create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
         vertex_for_frame = [frame_model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]
         self.frame_vertices, self.frame_indices = self.create_frame(vertex_for_frame)
-        frame_vertex_model = self.get_frame_model_matrix()
+        # update frame vao
+        glDeleteVertexArrays(1, (self.frame_vao,))
+        self.frame_vao = self.create_vao(self.frame_vertices, self.frame_indices)
+        # update frame_vertex status
+        frame_vertex_model = self.get_frame_model_matrix().T
         self.frame_vertex = [frame_vertex_model@np.array([*vertex[:3], 1.0]) for vertex in self.frame_vertices]
         self.frame_vertex = [vertex[:3] for vertex in self.frame_vertex]
 

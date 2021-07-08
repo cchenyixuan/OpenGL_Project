@@ -8,7 +8,7 @@ class CheckCollision:
         self.normals = []
 
     def __call__(self):
-        pass
+        return self.separating_axis_theorem()
 
     def clear(self):
         self.polygon_a = []
@@ -19,9 +19,17 @@ class CheckCollision:
         self.normals.extend(polygon_a.frame_normal)
         self.normals.extend(polygon_b.frame_normal)
         self.polygon_a.extend(polygon_a.frame_vertex)
-        self.polygon_a = [vertex + polygon_a.offset[:3] for vertex in self.polygon_a]
+        self.polygon_a = [vertex[:3] for vertex in self.polygon_a]
         self.polygon_b.extend(polygon_b.frame_vertex)
-        self.polygon_b = [vertex + polygon_b.offset[:3] for vertex in self.polygon_b]
+        self.polygon_b = [vertex[:3] for vertex in self.polygon_b]
+
+    def load_polygons__(self, polygon_a, polygon_b):
+        self.normals.extend(polygon_a.normal)
+        self.normals.extend(polygon_b.normal)
+        self.polygon_a.extend(polygon_a.vertex)
+        self.polygon_a = [vertex[:3] for vertex in self.polygon_a]
+        self.polygon_b.extend(polygon_b.vertex)
+        self.polygon_b = [vertex[:3] for vertex in self.polygon_b]
 
     def separating_axis_theorem(self):
         collision = True

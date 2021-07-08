@@ -39,7 +39,7 @@ void main(){
             color = vec4(1.0, 1.0, 0.0, 1.0);
             break;
         case 2:
-            color = texture(texture_2d, f_tex);//vec4(1.0, 0.0, 0.0, 1.0);
+            color = vec4(1.0, 0.0, 0.0, 1.0);
             break;
 
     }
