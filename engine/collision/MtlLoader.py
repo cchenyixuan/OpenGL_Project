@@ -5,7 +5,7 @@ from OpenGL.GL import *
 
 class LoadMaterial:
     def __init__(self):
-        self.texture = None
+        self.texture = 0
         pass
 
     def __call__(self):

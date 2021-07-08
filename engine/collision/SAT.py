@@ -23,14 +23,6 @@ class CheckCollision:
         self.polygon_b.extend(polygon_b.frame_vertex)
         self.polygon_b = [vertex + polygon_b.offset[:3] for vertex in self.polygon_b]
 
-    def load_polygon_a(self, polygon):
-        self.normals.extend(polygon.normal)
-        self.polygon_a.extend(polygon.vertex)
-
-    def load_polygon_b(self, polygon):
-        self.normals.extend(polygon.normal)
-        self.polygon_b.extend(polygon.vertex)
-
     def separating_axis_theorem(self):
         collision = True
         for axis in self.normals:
