@@ -33,7 +33,7 @@ uniform int mode;
 void main(){
     switch(mode){
         case 0:
-            color = texture(texture_2d, f_tex);//vec4(0.0, 1.0, 0.0, 1.0);
+            color = vec4(f_nor, 1.0);//texture(texture_2d, f_tex);
             break;
         case 1:
             color = vec4(1.0, 1.0, 0.0, 1.0);

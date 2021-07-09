@@ -51,6 +51,7 @@ class ModelObject:
         # update vertex status
         model = create_from_translation(self.offset).T @ create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
         self.vertex = [model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]
+        self.normal = [create_from_axis_rotation(*self.rotation) @ np.array([*vertex[5:8], 1.0]) for vertex in self.vertices]
         # create frame
         frame_model = create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
         vertex_for_frame = [frame_model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]

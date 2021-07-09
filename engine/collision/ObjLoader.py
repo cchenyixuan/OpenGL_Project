@@ -44,11 +44,20 @@ class LoadObject:
                     #     vertex.extend(normals[index[i * 3 + 2]])
                     #     buffer.append(vertex)
                     for i in range(3):
-                        if len(vertices[index[i * 3]]) < 8:
-                            vertices[index[i * 3]].extend(texture_uvs[index[i * 3 + 1]])
-                            vertices[index[i * 3]].extend(normals[index[i * 3 + 2]])
+                        vertices[index[i * 3]].extend(texture_uvs[index[i * 3 + 1]])
+                        vertices[index[i * 3]].extend(normals[index[i * 3 + 2]])
             f.close()
-        self.vertices = vertices
+        averaged_vertex = []
+        for vertex in vertices:
+            pos = vertex[:3]
+            uv_normal = np.array([0, 0, 0, 0, 0], dtype=np.float32)
+            uvnnn = [np.array(vertex[3+5*j:8+5*j]) for j in range((len(vertex)-3)//5)]
+            for partial in uvnnn:
+                uv_normal += partial/len(uvnnn)
+            averaged_vertex.append([*pos, *uv_normal])
+
+
+        self.vertices = averaged_vertex
         # self.vertices = buffer
         # self.indices = [[i] for i in range(len(buffer))]
 

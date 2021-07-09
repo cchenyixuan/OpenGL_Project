@@ -22,11 +22,11 @@ glUseProgram(shader)
 
 tetra = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\tetra.obj")
 tetra.set_attribute(scale=0.1, is_static=False)
-ball = ModelObject()
+ball = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\bag.obj")
 cubes = {}
 for i in range(1, 10):
-    cubes[i] = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\tetra.obj")
-    cubes[i].set_attribute(scale=1/i, offset=np.array([2 * i, 0, 0.0, 0.0]))
+    cubes[i] = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ball.obj")
+    cubes[i].set_attribute(scale=1 / i, offset=np.array([2 * i, 0, 0.0, 0.0]))
 ground = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ground.obj")
 ground.set_attribute(offset=np.array([0.0, -2.0, 0.0, 0.0]))
 
@@ -35,7 +35,7 @@ skybox.set_attribute(scale=1000)
 
 # TODO =======# should be put in camera #=======
 cam = Camera()
-model = pyrr.matrix44.create_from_x_rotation(0.0)
+model = pyrr.matrix44.create_identity()
 model_loc = glGetUniformLocation(shader, "model")
 glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 view = cam.create_view()
@@ -136,7 +136,7 @@ def mouse_operation_clb(window, button, action, mods):
 
 
 def mouse_position_clb(window, xpos, ypos):
-    if cam.left_button_lock == True and cam.right_button_lock == True:
+    if cam.left_button_lock and cam.right_button_lock:
         cam.cursor = [xpos, ypos]
     else:
         dx = cam.cursor[0] - xpos
@@ -151,7 +151,7 @@ def mouse_position_clb(window, xpos, ypos):
         cam.right = pyrr.Vector3([-cam.front[2], 0, cam.front[0]])
         cam.right /= np.linalg.norm(cam.right)
 
-    if cam.right_button_lock == False:
+    if not cam.right_button_lock:
         cam.face = pyrr.Vector3([cam.front[0], 0, cam.front[2]])
         cam.face /= np.linalg.norm(cam.face)
         cam.right_hand = pyrr.Vector3([-cam.front[2], 0, cam.front[0]])
@@ -159,7 +159,6 @@ def mouse_position_clb(window, xpos, ypos):
 
 
 def collision_detect():
-
     pass
 
 
@@ -177,23 +176,15 @@ while not glfw.window_should_close(window):
     draw_polygon_with_frame(skybox)
 
     tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
-    sat.load_polygons(tetra, ball)
+    sat.load_polygon_frames(tetra, ball)
     if sat.separating_axis_theorem():
         glUniform1i(mode_loc, 1)
-        sat.__init__()
-        sat.load_polygons__(tetra, ball)
-        if sat():
-            glUniform1i(mode_loc, 2)
     sat.__init__()
     draw_polygon_with_frame(ball)
     for i in range(1, 10):
-        sat.load_polygons(tetra, cubes[i])
+        sat.load_polygon_frames(tetra, cubes[i])
         if sat.separating_axis_theorem():
             glUniform1i(mode_loc, 1)
-            sat.__init__()
-            sat.load_polygons__(tetra, cubes[i])
-            if sat():
-                glUniform1i(mode_loc, 2)
         sat.__init__()
     draw_polygon_with_frame(tetra)
     glUniform1i(mode_loc, 0)
@@ -201,7 +192,7 @@ while not glfw.window_should_close(window):
     # draw_polygon_with_frame(cube)
 
     for i in range(1, 10):
-        cubes[i].set_attribute(rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
+        # cubes[i].set_attribute(rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
         draw_polygon_with_frame(cubes[i])
     # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     draw_polygon(ground)

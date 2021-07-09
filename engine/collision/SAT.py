@@ -15,7 +15,7 @@ class CheckCollision:
         self.polygon_b = []
         self.normals = []
 
-    def load_polygons(self, polygon_a, polygon_b):
+    def load_polygon_frames(self, polygon_a, polygon_b):
         self.normals.extend(polygon_a.frame_normal)
         self.normals.extend(polygon_b.frame_normal)
         self.polygon_a.extend(polygon_a.frame_vertex)
@@ -23,9 +23,10 @@ class CheckCollision:
         self.polygon_b.extend(polygon_b.frame_vertex)
         self.polygon_b = [vertex[:3] for vertex in self.polygon_b]
 
-    def load_polygons__(self, polygon_a, polygon_b):
+    def load_polygons(self, polygon_a, polygon_b):
         self.normals.extend(polygon_a.normal)
         self.normals.extend(polygon_b.normal)
+        self.normals = [normal[:3] for normal in self.normals]
         self.polygon_a.extend(polygon_a.vertex)
         self.polygon_a = [vertex[:3] for vertex in self.polygon_a]
         self.polygon_b.extend(polygon_b.vertex)
