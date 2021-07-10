@@ -4,7 +4,7 @@ from pyrr.matrix44 import create_from_translation, create_from_axis_rotation, cr
 
 
 class ModelObject:
-    def __init__(self, filename=r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ball.obj"):
+    def __init__(self, filename=r"D:\pythonstudio\OpenGL_Project\engine\resources\model\ball.obj"):
         from ObjLoader import LoadObject
         object_loader = LoadObject()
         from MtlLoader import LoadMaterial
@@ -49,11 +49,11 @@ class ModelObject:
 
     def __call__(self):
         # update vertex status
-        model = create_from_translation(self.offset).T @ create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
+        model = create_from_translation(self.offset).T @ create_from_axis_rotation(*self.rotation).T @ create_from_scale(self.scale)
         self.vertex = [model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]
         self.normal = [create_from_axis_rotation(*self.rotation) @ np.array([*vertex[5:8], 1.0]) for vertex in self.vertices]
         # create frame
-        frame_model = create_from_axis_rotation(*self.rotation) @ create_from_scale(self.scale)
+        frame_model = create_from_scale(self.scale) @ create_from_axis_rotation(*self.rotation).T
         vertex_for_frame = [frame_model @ np.array([*vertex[:3], 1.0]) for vertex in self.vertices]
         self.frame_vertices, self.frame_indices = self.create_frame(vertex_for_frame)
         # update frame vao
@@ -61,7 +61,7 @@ class ModelObject:
         self.frame_vao = self.create_vao(self.frame_vertices, self.frame_indices)
         # update frame_vertex status
         frame_vertex_model = self.get_frame_model_matrix().T
-        self.frame_vertex = [frame_vertex_model@np.array([*vertex[:3], 1.0]) for vertex in self.frame_vertices]
+        self.frame_vertex = [frame_vertex_model @ np.array([*vertex[:3], 1.0]) for vertex in self.frame_vertices]
         self.frame_vertex = [vertex[:3] for vertex in self.frame_vertex]
 
     @staticmethod
@@ -72,19 +72,18 @@ class ModelObject:
         y_max = -1e8
         z_min = 1e8
         z_max = -1e8
-        _vertices = vertex
-        for _vertex in _vertices:
-            if _vertex[0] > x_max:
+        for _vertex in vertex:
+            if _vertex[0] >= x_max:
                 x_max = _vertex[0]
-            if _vertex[1] > y_max:
+            if _vertex[1] >= y_max:
                 y_max = _vertex[1]
-            if _vertex[2] > z_max:
+            if _vertex[2] >= z_max:
                 z_max = _vertex[2]
-            if _vertex[0] < x_min:
+            if _vertex[0] <= x_min:
                 x_min = _vertex[0]
-            if _vertex[1] < y_min:
+            if _vertex[1] <= y_min:
                 y_min = _vertex[1]
-            if _vertex[2] < z_min:
+            if _vertex[2] <= z_min:
                 z_min = _vertex[2]
         frame = np.array([[x_min, y_min, z_min, 0.0, 0.0, 1.0, 0.0, 0.0],
                           [x_min, y_min, z_max, 0.0, 0.0, 1.0, 0.0, 0.0],
@@ -106,6 +105,7 @@ class ModelObject:
                                   4, 5, 7,
                                   3, 4, 6,
                                   4, 6, 7], dtype=np.uint32)
+        print(x_min,x_max,y_min,y_max,z_min,z_max)
         return frame, frame_indices
 
     @staticmethod
