@@ -4,7 +4,7 @@ from pyrr.matrix44 import create_from_translation, create_from_axis_rotation, cr
 
 
 class ModelObject:
-    def __init__(self, filename=r"D:\pythonstudio\OpenGL_Project\engine\resources\model\ball.obj"):
+    def __init__(self, filename=r".\resources\model\ball.obj"):
         from ObjLoader import LoadObject
         object_loader = LoadObject()
         from MtlLoader import LoadMaterial

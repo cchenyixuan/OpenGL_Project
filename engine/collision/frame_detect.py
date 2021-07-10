@@ -7,6 +7,11 @@ from polygon import *
 from shader_src import vertex_src, fragment_src
 from SAT import CheckCollision
 from camera import *
+import os
+
+print(os.getcwd())
+print(os.path.dirname(os.getcwd()))
+os.chdir(os.path.dirname(os.getcwd()))
 
 # %% global var an init 
 MOUSE_PRESSED = False
@@ -20,17 +25,18 @@ glfw.make_context_current(window)
 shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER), compileShader(fragment_src, GL_FRAGMENT_SHADER))
 glUseProgram(shader)
 
-tetra = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\tetra.obj")
-tetra.set_attribute(scale=0.1, is_static=False)
-ball = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\bag.obj")
+tetra = ModelObject(r".\resources\model\cube_group.obj")
+tetra.set_attribute(scale=0.01, is_static=False)
+ball = ModelObject(r".\resources\model\cube_group.obj")
+ball.set_attribute(scale=0.1, rotation=[np.array([1.0, 1.0, 2.0]), 1])
 cubes = {}
 for i in range(1, 10):
-    cubes[i] = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ball.obj")
+    cubes[i] = ModelObject(r".\resources\model\ball.obj")
     cubes[i].set_attribute(scale=1 / i, offset=np.array([2 * i, 0, 0.0, 0.0]))
-ground = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\ground.obj")
-ground.set_attribute(offset=np.array([0.0, -2.0, 0.0, 0.0]))
+ground = ModelObject(r".\resources\model\ground.obj")
+ground.set_attribute(offset=np.array([0.0, -8.0, 0.0, 0.0]))
 
-skybox = ModelObject(r"C:\PycharmProjects\OpenGL_Project\engine\resources\model\skybox.obj")
+skybox = ModelObject(r".\resources\model\skybox.obj")
 skybox.set_attribute(scale=1000)
 
 # TODO =======# should be put in camera #=======
@@ -171,11 +177,11 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, cam.create_view())
-    skybox.set_attribute(offset=cam.position)
+    # skybox.set_attribute(offset=cam.position)
 
     draw_polygon_with_frame(skybox)
 
-    tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([1.0, 0.0, 0.0]), glfw.get_time()])
+    tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([glfw.get_time(), glfw.get_time()*2, glfw.get_time()*3]), glfw.get_time()])
     sat.load_polygon_frames(tetra, ball)
     if sat.separating_axis_theorem():
         glUniform1i(mode_loc, 1)
