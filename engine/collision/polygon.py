@@ -105,7 +105,6 @@ class ModelObject:
                                   4, 5, 7,
                                   3, 4, 6,
                                   4, 6, 7], dtype=np.uint32)
-        print(x_min,x_max,y_min,y_max,z_min,z_max)
         return frame, frame_indices
 
     @staticmethod
