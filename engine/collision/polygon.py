@@ -45,6 +45,7 @@ class ModelObject:
         # type check for scale: float --> [float, float, float]
         if type(self.scale) is not np.ndarray:
             self.scale = np.array([self.scale] * 3)
+        # __call__ costs a lot...
         self.__call__()
 
     def __call__(self):
@@ -62,7 +63,7 @@ class ModelObject:
         # update frame_vertex status
         frame_vertex_model = self.get_frame_model_matrix().T
         self.frame_vertex = [frame_vertex_model @ np.array([*vertex[:3], 1.0]) for vertex in self.frame_vertices]
-        self.frame_vertex = [vertex[:3] for vertex in self.frame_vertex]
+        # self.frame_vertex = [vertex[:3] for vertex in self.frame_vertex]
 
     @staticmethod
     def create_frame(vertex):

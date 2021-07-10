@@ -177,9 +177,9 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, cam.create_view())
-    # skybox.set_attribute(offset=cam.position)
+    skybox.offset = cam.position
 
-    draw_polygon_with_frame(skybox)
+    draw_polygon(skybox)
 
     tetra.set_attribute(offset=cam.get_cursor_position(), rotation=[np.array([glfw.get_time(), glfw.get_time()*2, glfw.get_time()*3]), glfw.get_time()])
     sat.load_polygon_frames(tetra, ball)
